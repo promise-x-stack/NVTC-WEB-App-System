@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admission Letter – NVTC</title>
+
+    <!-- html2pdf for clean A4 PDF download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Times New Roman', 'Liberation Serif', 'Georgia', serif;
+            background: #3f4652;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 80px 20px 40px;
+            min-height: 100vh;
+        }
+
+        /* ---------- DOWNLOAD BAR ---------- */
+        .download-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .download-btn {
+            padding: 11px 22px;
+            background: #0a6b3c;
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(10, 107, 60, 0.45);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .download-btn:hover {
+            background: #064a2a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(10, 107, 60, 0.55);
+        }
+
+        .download-btn:active { transform: translateY(0); }
+
+        .download-btn.alt {
+            background: #6b7280;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        }
+
+        .download-btn.alt:hover { background: #4b5563; }
+
+        /* ---------- A4 LETTER PAGE ---------- */
+        .letter-page {
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            padding: 12mm 16mm 16mm 16mm;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+            position: relative;
+            color: #000000;
+            font-size: 11pt;
+            line-height: 1.42;
+        }
+
+        /* ---------- WIDE LETTERHEAD BANNER (matches original image) ---------- */
+        .letterhead-banner {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin: 0 0 18px 0;
+            border: 1px solid #d1d5db;
+            background: #e6f5ed;
+        }
+
+        /* ---------- DATE ---------- */
+        .letter-date {
+            text-align: right;
+            margin-bottom: 14px;
+            font-size: 11pt;
+        }
+
+        .letter-date sup { font-size: 7pt; }
+
+        /* ---------- META ---------- */
+        .letter-meta {
+            margin-bottom: 16px;
+            font-size: 11pt;
+            line-height: 1.7;
+        }
+
+        .letter-meta strong {
+            display: inline-block;
+            min-width: 175px;
+        }
+
+        /* ---------- REF LINE ---------- */
+        .ref-line {
+            font-size: 12.5pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 16px 0 14px 0;
+            letter-spacing: 0.3px;
+        }
+
+        /* ---------- BODY ---------- */
+        .letter-page p {
+            margin-bottom: 9px;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        .letter-page p strong { font-weight: bold; }
+
+        /* ---------- NUMBERED LISTS ---------- */
+        .numbered-list {
+            margin: 6px 0 8px 20px;
+            padding-left: 8px;
+        }
+
+        .numbered-list > li {
+            margin-bottom: 7px;
+            padding-left: 4px;
+        }
+
+        .sub-list {
+            list-style-type: lower-alpha;
+            margin: 4px 0 4px 24px;
+        }
+
+        .sub-list li {
+            margin-bottom: 2px;
+            text-align: left;
+        }
+
+        /* ---------- CLOSING & SIGNATURE ---------- */
+        .closing-text {
+            margin-top: 18px;
+            margin-bottom: 34px;
+        }
+
+        .signature-block {
+            margin-top: 6px;
+            line-height: 1.65;
+        }
+
+        .signature-line {
+            width: 210px;
+            height: 26px;
+            border-bottom: 1px solid #333333;
+            margin-bottom: 4px;
+        }
+
+        .signature-block .name {
+            font-weight: bold;
+            font-size: 11pt;
+        }
+
+        .signature-block .title { font-size: 11pt; }
+
+        /* ---------- PRINT ---------- */
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+                margin: 0;
+            }
+            .download-bar { display: none !important; }
+            .letter-page {
+                box-shadow: none;
+                width: 210mm;
+                min-height: 297mm;
+                padding: 12mm 16mm;
+            }
+        }
+
+        /* ---------- MOBILE ---------- */
+        @media (max-width: 768px) {
+            body { padding: 70px 10px 20px; }
+
+            .download-bar {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+            }
+
+            .download-btn {
+                padding: 9px 16px;
+                font-size: 12px;
+            }
+
+            .letter-page {
+                width: 100%;
+                min-height: auto;
+                padding: 16px 14px;
+                font-size: 10.5pt;
+            }
+
+            .letter-meta strong { min-width: 135px; }
+
+            .signature-line { width: 160px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== DOWNLOAD / PRINT BAR ===== -->
+    <div class="download-bar">
+        <button class="download-btn" onclick="downloadPDF()">
+            <i class="fas fa-download"></i> Download PDF
+        </button>
+        <button class="download-btn alt" onclick="window.print()">
+            <i class="fas fa-print"></i> Print
+        </button>
+    </div>
+
+    <!-- ===== LETTER CONTENT (this is what gets downloaded) ===== -->
+    <div class="letter-page" id="letterContent">
+
+        <!-- ===== WIDE LETTERHEAD BANNER (placeholder image) =====
+             Original was 6.98in × 1.01in ≈ 6.9:1 ratio.
+             Below dimensions match that ratio at print quality.
+             Replace the src with your real NVTC letterhead image. -->
+        <img
+            class="letterhead-banner"
+            src="https://placehold.co/1740x252/e6f5ed/0a6b3c?text=NAKURU+VOCATIONAL+TRAINING+CENTRE%0ACounty+Government+of+Nakuru+%7C+Department+of+Education%2C+ICT+%26+eGovernment%0AP.O.+Box+3973+-+20100%2C+Nakuru+%7C+Tel:+0702+474+169&font=serif"
+            alt="Nakuru Vocational Training Centre Letterhead"
+            crossorigin="anonymous"
+        />
+
+        <!-- ===== DATE ===== -->
+        <div class="letter-date">
+            14<sup>th</sup> September, 2026
+        </div>
+
+        <!-- ===== ID / PHONE META ===== -->
+        <div class="letter-meta">
+            <div><strong>Id Number/Birth Number:</strong> 3929394</div>
+            <div><strong>Phone Number:</strong> 014273109</div>
+        </div>
+
+        <!-- ===== REFERENCE LINE ===== -->
+        <div class="ref-line">REF: LETTER OF OFFER</div>
+
+        <!-- ===== BODY ===== -->
+        <p>
+            Following your application to enroll and train with Nakuru Vocational Training Centre, we would like to offer you an opportunity to train with us.
+        </p>
+
+        <p>
+            We are pleased to inform you that you have been offered admission for a training program under <strong>CBET</strong>, you are hereby placed under <strong>ARTS Department</strong> to pursue <strong>Cosmetology level 4</strong>. The program is designed to take <strong>12 months</strong> distributed termly. In addition you will be expected to undergo a mandatory industrial training for a period of not less than <strong>3 months</strong>.
+        </p>
+
+        <p>
+            You are placed under <strong>Regular</strong> mode of study and your course commences on <strong>14<sup>th</sup> September, 2026</strong>.
+        </p>
+
+        <p>To complete your admission, you are hereby:</p>
+
+        <ol class="numbered-list">
+            <li>
+                Required to provide the following documents
+                <ol class="sub-list">
+                    <li>Passport Photo.</li>
+                    <li>Copy of ID.</li>
+                    <li>Latest Copy of School Certificate.</li>
+                </ol>
+            </li>
+            <li>
+                Required to read, understand and append signature to the following documents which provide guidelines on your training period for the above duration.
+                <ol class="sub-list">
+                    <li>Institutions Rules and Regulations.</li>
+                    <li>Code of Dressing.</li>
+                    <li>Boarding rules and Regulations for Boarders Trainees.</li>
+                    <li>S.O. Ps provided.</li>
+                </ol>
+            </li>
+        </ol>
+
+        <p>
+            After completion of admission process, with a copy of this letter you are expected to report to the respective Head of Department.
+        </p>
+
+        <p>We wish you all the best as you train with us and your future as well.</p>
+
+        <p>Thank you for choosing to train with us.</p>
+
+        <!-- ===== CLOSING ===== -->
+        <div class="closing-text">Yours sincerely</div>
+
+        <div class="signature-block">
+            <div class="signature-line"></div>
+            <div class="name">Registrar</div>
+            <div class="title">Nakuru Vocational Training Centre</div>
+        </div>
+
+    </div>
+
+    <!-- ===== PDF DOWNLOAD SCRIPT ===== -->
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('letterContent');
+
+            const opt = {
+                margin: 0,
+                filename: 'NVTC_Admission_Letter.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: true,
+                    scrollY: 0,
+                    scrollX: 0
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                },
+                pagebreak: { mode: ['css', 'legacy'] }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+
+</body>
+</html>
